@@ -8,7 +8,6 @@ pub struct SerialParameter {
 }
 pub fn collect_fft(buf: &[u8]) -> Vec<Vec<f32>> {
     let mut iter = buf.iter().enumerate();
-    // let mut iter = iter.skip(70);
     let mut index;
     loop {
         let (_indx, current) = iter.next().unwrap();

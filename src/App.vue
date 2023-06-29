@@ -5,8 +5,5 @@ import DisplayFFT from "./components/DisplayFFT.vue";
 </script>
 
 <template>
-  <!-- <Selector/> -->
   <DisplayFFT />
-  <!-- <div class="container">
-  </div> -->
 </template>
