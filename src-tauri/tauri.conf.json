@@ -37,8 +37,8 @@
       {
         "fullscreen": false,
         "resizable": true,
-        "title": "tauri-plot",
-        "width": 800,
+        "title": "震动频率测量上位机",
+        "width": 900,
         "height": 600
       }
     ]
