@@ -60,3 +60,8 @@ jobs:
           releaseBody: 'See the assets to download this version and install.'
           releaseDraft: true
           prerelease: false
+      
+      - uses: ncipollo/release-action@v1
+        with:
+          artifacts: ".\\src-tauri\\target\\release\\bundle\\nsis\\tauri-plot_0.0.0_x64-setup.exe"
+          bodyFile: "body.md"
