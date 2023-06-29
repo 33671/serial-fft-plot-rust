@@ -1,7 +1,7 @@
 name: Release
 on:
   push:
-    tags:
+     tags:
       - '*'
   workflow_dispatch:
 
@@ -37,8 +37,8 @@ jobs:
       - name: Sync node version and setup cache
         uses: actions/setup-node@v3
         with:
-          node-version: '14'
-          cache: 'pnpm' # Set this to npm, yarn or pnpm.
+          node-version: 'lts/*'
+          # cache: 'pnpm' # Set this to npm, yarn or pnpm.
 
       - uses: pnpm/action-setup@v2
         with:
