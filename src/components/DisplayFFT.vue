@@ -8,15 +8,15 @@ import {
   ChartOptions,
   DecimationOptions,
 } from "chart.js/auto";
-let selected_baud = ref(115200);
+const selected_baud = ref(115200);
 let isSelected = false;
-let ports = ref([]);
+const ports = ref([]);
 onMounted(async () => {
   ports.value = await invoke("list_ports");
   console.log(ports);
 });
 
-let selected_port = ref<String>();
+const selected_port = ref<String>();
 async function listen() {
   if (selected_port.value == "" || selected_port.value == null) return;
   await invoke("listen_port", {
@@ -39,53 +39,53 @@ const SHOW_NUM = 128;
 const labels = Array.from(Array(SHOW_NUM).keys()).map((x) =>
   Math.round((x * MAX_FREQ) / POINTS_NUM)
 );
-let xAxis = Array.from(Array(SHOW_NUM).keys()).map((x) => 0);
-const data: ChartData = {
+const yValue = Array.from(Array(SHOW_NUM).keys()).map((x) => 0);
+const datax: ChartData = {
   labels: labels,
   datasets: [
     {
       pointStyle: false,
       label: "X ACC",
-      data: xAxis,
+      data: yValue,
       fill: "start",
       borderColor: "rgb(75, 192, 192)",
       tension: 0.4,
     },
   ],
 };
-let datay = {
+const datay: ChartData = {
   labels: labels,
   datasets: [
     {
       pointStyle: false,
       label: "Y ACC",
-      data: xAxis,
+      data: yValue,
       fill: "start",
       borderColor: "rgb(75, 192, 192)",
       tension: 0.4,
     },
   ],
 };
-let dataz = {
+const dataz: ChartData = {
   labels: labels,
   datasets: [
     {
       pointStyle: false,
       label: "Z ACC",
-      data: xAxis,
+      data: yValue,
       fill: "start",
       borderColor: "rgb(75, 192, 192)",
       tension: 0.4,
     },
   ],
 };
-let dataxyz = {
+const dataxyz: ChartData = {
   labels: labels,
   datasets: [
     {
       pointStyle: false,
       label: "XYZ ACC",
-      data: xAxis,
+      data: yValue,
       fill: "start",
       borderColor: "rgb(75, 192, 192)",
       tension: 0.4,
@@ -97,7 +97,7 @@ const decimation: DecimationOptions = {
   algorithm: "min-max",
 };
 // borderColor: 'rgb(75, 192, 192)',
-let chart_config: any = {
+const chart_config: any = {
   type: "line",
   options: {
     // plugins: {
@@ -128,11 +128,11 @@ let max = reactive<{
   xyz: { freq: "", amp: "" },
 });
 onMounted(() => {
-  let ctx = document.querySelector(".my-chart") as HTMLCanvasElement;
-  let ctxy = document.querySelector(".my-charty") as HTMLCanvasElement;
-  let ctz = document.querySelector(".my-chartz") as HTMLCanvasElement;
-  let ctxyz = document.querySelector(".my-chartxyz") as HTMLCanvasElement;
-  chart = new Chart(ctx, { ...chart_config, data: data });
+  const ctx = document.querySelector(".my-chart") as HTMLCanvasElement;
+  const ctxy = document.querySelector(".my-charty") as HTMLCanvasElement;
+  const ctz = document.querySelector(".my-chartz") as HTMLCanvasElement;
+  const ctxyz = document.querySelector(".my-chartxyz") as HTMLCanvasElement;
+  chart = new Chart(ctx, { ...chart_config, data: datax });
   charty = new Chart(ctxy, {
     ...chart_config,
     data: datay,
@@ -175,11 +175,22 @@ function indexOfMax(arr: Array<number>): number {
 let sample_rate = ref(0);
 setInterval(async () => {
   if (!isSelected) return;
-  let fft_batch: Array<Array<number>> = await invoke("get_fft_result");
+  const fft_batch: Array<Array<number>> = await invoke("get_fft_result");
   console.log(fft_batch);
   sample_rate.value = await invoke("get_sample_rate");
 
-  data.datasets[0].data = fft_batch[0];
+  const max_freq = sample_rate.value / 2; 
+
+  const xaxis =  Array.from(Array(SHOW_NUM).keys()).map((x) =>
+    Math.round(x * max_freq / POINTS_NUM)
+  );
+
+  datax.labels = xaxis;
+  datay.labels = xaxis;
+  dataz.labels = xaxis;
+  dataxyz.labels = xaxis;
+
+  datax.datasets[0].data = fft_batch[0];
   datay.datasets[0].data = fft_batch[1];
   dataz.datasets[0].data = fft_batch[2];
   dataxyz.datasets[0].data = fft_batch[3];
@@ -187,7 +198,7 @@ setInterval(async () => {
   chart.update();
   chartxyz.update();
   chartz.update();
-  let getFreq = (idx: number) => ((idx / POINTS_NUM) * MAX_FREQ).toFixed(2);
+  let getFreq = (idx: number) => ((idx / POINTS_NUM) * max_freq).toFixed(2);
   const amp_limit = 0.3;
   setTimeout(() => {
     let index = indexOfMax(fft_batch[0].slice(3)) + 3;
@@ -230,16 +241,20 @@ setInterval(async () => {
 </script>
 
 <template>
-  <div style="width: 100%;font-size: smaller;">
-
+  <div style="width: 100%; font-size: smaller">
     <label for="ports">端口:</label>
-  
-    <select name="ports" id="ports" v-model="selected_port" style="width: 150px;">
+
+    <select
+      name="ports"
+      id="ports"
+      v-model="selected_port"
+      style="width: 150px"
+    >
       <option v-for="item in ports" :value="item">{{ item }}</option>
     </select>
-  
+
     <label for="ports" style="margin-left: 20px">波特率:</label>
-  
+
     <select name="ports" id="ports" v-model="selected_baud">
       <option
         v-for="item in [1200, 2400, 4800, 9600, 19200, 38400, 57600, 115200]"
@@ -248,7 +263,7 @@ setInterval(async () => {
         {{ item }}
       </option>
     </select>
-  
+
     <button
       @click="refresh"
       style="margin-left: 20px; padding-top: 5px; padding-bottom: 5px"
@@ -261,7 +276,7 @@ setInterval(async () => {
     >
       监听
     </button>
-  
+
     <span style="margin-left: 20px"
       >当前采样率：{{ sample_rate }} Hz 分辨率：{{
         (MAX_FREQ / POINTS_NUM).toFixed(2)
@@ -269,7 +284,7 @@ setInterval(async () => {
     >
   </div>
 
-  <div style="display: flex; width: 100%;height: 100%;">
+  <div style="display: flex; width: 100%; height: 100%">
     <div style="flex: 1; position: relative">
       <canvas class="my-chart"></canvas>
       <div class="text-small">
