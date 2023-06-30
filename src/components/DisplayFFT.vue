@@ -230,7 +230,7 @@ setInterval(async () => {
 </script>
 
 <template>
-  <div style="width: 100vw;font-size: smaller;">
+  <div style="width: 100%;font-size: smaller;">
 
     <label for="ports">端口:</label>
   
@@ -269,7 +269,7 @@ setInterval(async () => {
     >
   </div>
 
-  <div style="display: flex; width: 100vw;height: 100%;">
+  <div style="display: flex; width: 100%;height: 100%;">
     <div style="flex: 1; position: relative">
       <canvas class="my-chart"></canvas>
       <div class="text-small">
@@ -283,7 +283,7 @@ setInterval(async () => {
       </div>
     </div>
   </div>
-  <div style="display: flex; width: 100vw">
+  <div style="display: flex; width: 100%">
     <div style="flex: 1; position: relative; width: 100%">
       <canvas class="my-chartz"></canvas>
       <div class="text-small">
