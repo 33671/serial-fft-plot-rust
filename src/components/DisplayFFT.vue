@@ -33,11 +33,11 @@ let charty: Chart;
 let chartxyz: Chart;
 let chartz: Chart;
 
-const MAX_FREQ = 728.0;
+const MAX_FREQ = ref(728.0);
 const POINTS_NUM = 2048.0;
 const SHOW_NUM = 128;
 const labels = Array.from(Array(SHOW_NUM).keys()).map((x) =>
-  Math.round((x * MAX_FREQ) / POINTS_NUM)
+  Math.round((x * MAX_FREQ.value) / POINTS_NUM)
 );
 const yValue = Array.from(Array(SHOW_NUM).keys()).map((x) => 0);
 const datax: ChartData = {
@@ -179,10 +179,10 @@ setInterval(async () => {
   console.log(fft_batch);
   sample_rate.value = await invoke("get_sample_rate");
 
-  const max_freq = sample_rate.value / 2; 
+  MAX_FREQ.value = sample_rate.value / 2; 
 
   const xaxis =  Array.from(Array(SHOW_NUM).keys()).map((x) =>
-    Math.round(x * max_freq / POINTS_NUM)
+    Math.round(x * MAX_FREQ.value / POINTS_NUM)
   );
 
   datax.labels = xaxis;
@@ -198,7 +198,7 @@ setInterval(async () => {
   chart.update();
   chartxyz.update();
   chartz.update();
-  let getFreq = (idx: number) => ((idx / POINTS_NUM) * max_freq).toFixed(2);
+  let getFreq = (idx: number) => ((idx / POINTS_NUM) * MAX_FREQ.value).toFixed(2);
   const amp_limit = 0.3;
   setTimeout(() => {
     let index = indexOfMax(fft_batch[0].slice(3)) + 3;
